@@ -10,6 +10,9 @@ import android.widget.Toast;
 import com.example.pc252.mydemo.bean.APIInterface;
 import com.example.pc252.mydemo.bean.TestModel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -34,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
     public void showDetail(){
         Toast.makeText(this,"fdhfgdhfg",Toast.LENGTH_SHORT).show();
        requestWebSite();//以get方式请求
-        requestWebSitePost();////以post方式请求
+        requestWebSitePost();//以post方式请求
+        requestWebSitePostMap();//以post Map方式请求
     }
     private void requestWebSite(){
         Retrofit retrofit= new Retrofit.Builder()
@@ -68,6 +72,27 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("zhangrui",response.body().getErrorCode()+"\n"+response.body().getReason()+"\n"+response.body().getResult().getData().getConclusion()+"\n"+response.body().getResult().getData().getAnalysis());
                 TestModel translation = response.body();
 //                Log.d("zhangrui",translation.getResult().getData().getAnalysis());
+            }
+
+            @Override
+            public void onFailure(Call<TestModel> call, Throwable t) {
+                Log.d("zhangrui",t.getMessage());
+            }
+        });
+    }
+
+    private void requestWebSitePostMap(){
+        Retrofit retrofitPostMap=new Retrofit.Builder().baseUrl("http://japi.juhe.cn").addConverterFactory(GsonConverterFactory.create()).build();
+        APIInterface apiInterfaceMap = retrofitPostMap.create(APIInterface.class);
+        Map<String,String> requestCanshu = new HashMap<String,String>();
+        requestCanshu.put("key","96efc220a4196fafdfade0c9d1e897ac");
+        requestCanshu.put("qq","295424589");
+        Call<TestModel> modelMap = apiInterfaceMap.repoPostMap("/qqevaluate/qq",requestCanshu);
+        modelMap.enqueue(new Callback<TestModel>() {
+            @Override
+            public void onResponse(Call<TestModel> call, Response<TestModel> response) {
+                Log.d("zhangrui",response.body().getErrorCode()+"\n"+response.body().getReason()+"\n"+response.body().getResult().getData().getConclusion()+"\n"+response.body().getResult().getData().getAnalysis());
+                TestModel translation = response.body();
             }
 
             @Override
